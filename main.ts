@@ -10,6 +10,29 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingBar = document.getElementById('loading-bar');
+const loadingText = document.getElementById('loading-text');
+
+THREE.DefaultLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+	const progress = Math.round((itemsLoaded / itemsTotal) * 100);
+	if (loadingBar) loadingBar.style.width = `${progress}%`;
+	if (loadingText) loadingText.textContent = `${progress}%`;
+};
+
+THREE.DefaultLoadingManager.onLoad = () => {
+	if (loadingBar) loadingBar.style.width = '100%';
+	if (loadingText) loadingText.textContent = '100%';
+	setTimeout(() => {
+		if (loadingOverlay) {
+			loadingOverlay.style.opacity = '0';
+			setTimeout(() => {
+				loadingOverlay.style.display = 'none';
+			}, 500);
+		}
+	}, 200);
+};
+
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
